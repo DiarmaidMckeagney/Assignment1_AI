@@ -1,7 +1,7 @@
 
 
 
-def evaluate_fitness(solution, moduleCount,students):
+def evaluate_fitness(solution, moduleCount, students):
     hardConstraintScore = 0 # tracks the hard constraints
     softConstraintScore = 0 # tracks the soft constraints
 
@@ -10,17 +10,23 @@ def evaluate_fitness(solution, moduleCount,students):
 
     # going through each module in each slot and counting the occurrence
     for slot in solution:
+        localModuleCount = [0] * (moduleCount + 1)
         for module in slot:
             moduleCountTracker[module] += 1
+            localModuleCount[module] += 1
+        for k in localModuleCount:
+            if k > 1:
+                hardConstraintScore -= 200
+
 
     # goes through and punishes duplicate module timetabling
     for i in moduleCountTracker:
         if i == 1:
-            hardConstraintScore += 100
+            hardConstraintScore += 100 # correct
         elif i == 0:
-            hardConstraintScore -= 100
+            hardConstraintScore -= 300 # missing module
         else:
-            hardConstraintScore -= 100
+            hardConstraintScore -= 100 # duplication
 
     #going through each student and checking for clashing exams and punishing them
     for student in students:
@@ -36,9 +42,6 @@ def evaluate_fitness(solution, moduleCount,students):
                 hardConstraintScore -= 100
 
     return hardConstraintScore
-
-
-
 
 
 if __name__ == '__main__':
