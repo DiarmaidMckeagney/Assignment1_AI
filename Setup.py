@@ -1,3 +1,5 @@
+import random
+
 def read_instance(fileName):
     print("Reading input file")
     
@@ -16,5 +18,19 @@ def read_instance(fileName):
     return numExams, numSlots, numStudents, enrollment
 
 
-def intialize_population():
+def intialize_population(popSize, numExams, numSlots):
     print("Setting up population")
+    population = []
+
+    for i in range(popSize):
+        solution = []
+        for j in range(numSlots):
+            slot = []
+            slotLength = random.randint(0, numExams)
+            for k in range(slotLength):
+                module = random.randint(1, numExams)
+                slot.append(module)
+            solution.append(slot)
+        population.append(solution)
+
+    return population
