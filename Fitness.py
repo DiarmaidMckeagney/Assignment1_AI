@@ -17,6 +17,8 @@ def evaluate_fitness(solution, moduleCount,students):
     for i in moduleCountTracker:
         if i == 1:
             hardConstraintScore += 100
+        elif i == 0:
+            hardConstraintScore -= 100
         else:
             hardConstraintScore -= 100
 
