@@ -11,7 +11,7 @@ the file has only a single word in the name it should still be capitalised.
 <br>
 <br>
 ### Variable Naming Scheme
-Variables should be named in *** case. For example, blah,blah,blah. Constants should be entirely uppercase-snakecase. For example, a constant containing population count would be called something like POP_COUNT.
+Variables should be named in Camel case. For example, thisVar. Constants should be entirely uppercase-snakecase. For example, a constant containing population count would be called something like POP_COUNT.
 
 ### Function Naming Scheme
-Functions should be named in *** case. For example a function name would be something like: func.
+Functions should be named in snake case. For example a function name would be something like: func.
