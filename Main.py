@@ -4,6 +4,7 @@ import numpy as np
 
 import Setup
 import Fitness
+import Crossover
 
 if __name__ == '__main__':
     print("hello world")
