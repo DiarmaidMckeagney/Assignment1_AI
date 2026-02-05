@@ -26,20 +26,24 @@ def evaluate_fitness(solution, moduleCount, students):
         elif i == 0:
             hardConstraintScore -= 300 # missing module
         else:
-            hardConstraintScore -= 100 # duplication
+            hardConstraintScore -= 1000 # duplication
 
     #going through each student and checking for clashing exams and punishing them
     for student in students:
+        examsInThisTimetable = [0] * moduleCount
         for slot in solution:
             examsInThisSlot = 0
             for module in slot:
-                if student[module - 1] == 1:
+                examsInThisTimetable[module] += 1
+                if student[module] == 1:
                     examsInThisSlot += 1
 
             if examsInThisSlot <= 1:
                 hardConstraintScore += 100
             else:
-                hardConstraintScore -= 100
+                hardConstraintScore -= 600
+        if examsInThisTimetable.count(0) > 0:
+            hardConstraintScore -= 600
 
     return hardConstraintScore
 
