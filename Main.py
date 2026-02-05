@@ -1,10 +1,15 @@
 import math
-
 import numpy as np
 
 import Setup
 import Fitness
 import Crossover
+
+GENERATIONS = 100
+POPULATION_SIZE = 100
+CROSSOVER_RATE = 0.8
+MUTATION_RATE = 0.05
+TOURNAMENT_SIZE = 3
 
 if __name__ == '__main__':
     print("hello world")
