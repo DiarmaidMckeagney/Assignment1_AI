@@ -28,7 +28,7 @@ def intialize_population(popSize, numExams, numSlots):
             slot = []
             slotLength = random.randint(0, numExams)
             for k in range(slotLength):
-                module = random.randint(1, numExams)
+                module = random.randint(0, numExams - 1)
                 slot.append(module)
             solution.append(slot)
         population.append(solution)
