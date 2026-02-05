@@ -1,6 +1,8 @@
+import random
+
 import numpy as np
 
-TOURNAMENT_SIZE = 4
+TOURNAMENT_SIZE = 3
 def run_tournament(population, fitnesses):
     randomIndxs = []
 
@@ -18,4 +20,9 @@ def run_tournament(population, fitnesses):
 
 
 def evaluate_round(participants):
-    return np.argmax(participants)
+    chanceFactor = random.random()
+
+    if chanceFactor < 0.5:
+        return np.argmax(participants)
+    else:
+        return random.randint(0,TOURNAMENT_SIZE-1)

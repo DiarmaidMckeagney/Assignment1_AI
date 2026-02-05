@@ -1,24 +1,20 @@
 import copy
 import math
 import random
-
 import numpy as np
-
 import Mutator
 import Setup
-import Fitness
-import Crossover
+from Code import Crossover, Fitness
 from Tournament import run_tournament
 
-GENERATIONS = 100
+GENERATIONS = 1000
 POPULATION_SIZE = 100
 CROSSOVER_RATE = 0.8
-MUTATION_RATE = 0.10
-TOURNAMENT_SIZE = 3
+MUTATION_RATE = 0.15
 
 if __name__ == '__main__':
     print("hello world")
-    numExams, numSlots, numStudents, enrollment = Setup.read_instance("trainingExample2.txt")
+    numExams, numSlots, numStudents, enrollment = Setup.read_instance("InputFiles/medium_instances.txt")
 
     population = Setup.intialize_population(100, numExams, numSlots)
 
@@ -26,7 +22,7 @@ if __name__ == '__main__':
     for i in range (0, GENERATIONS):
         fitnesses = []
         for pop in population:
-            fitnesses.append(Fitness.evaluate_fitness(pop, numExams,enrollment))
+            fitnesses.append(Fitness.evaluate_fitness(pop, numExams, enrollment))
 
         fitnesses = np.array(fitnesses)
         print(fitnesses)
@@ -52,20 +48,20 @@ if __name__ == '__main__':
             if chanceForCrossover < CROSSOVER_RATE and len(nextGeneration) < POPULATION_SIZE - 1:
                 winnerTwo = run_tournament(population, fitnesses)
 
-                childOne,childTwo = Crossover.crossover(winnerOne, winnerTwo)
+                childOne,childTwo = Crossover.crossover(winnerOne, winnerTwo, numSlots)
 
                 if random.random() < MUTATION_RATE:
-                    childOne = Mutator.mutate(childOne,numSlots,numExams)
+                    childOne = Mutator.mutate(childOne, numSlots, numExams)
 
                 if random.random() < MUTATION_RATE:
-                    childTwo = Mutator.mutate(childTwo,numSlots,numExams)
+                    childTwo = Mutator.mutate(childTwo, numSlots, numExams)
 
                 nextGeneration.append(childOne)
                 nextGeneration.append(childTwo)
 
             else:
                 if random.random() < MUTATION_RATE:
-                    winnerOne = Mutator.mutate(winnerOne,numSlots,numExams)
+                    winnerOne = Mutator.mutate(winnerOne, numSlots, numExams)
 
                 nextGeneration.append(winnerOne)
         maxFit = np.max(fitnesses)
@@ -75,7 +71,7 @@ if __name__ == '__main__':
 
     finalFitness = []
     for i in range(len(population)):
-        finalFitness.append(Fitness.evaluate_fitness(population[i],numExams,enrollment))
+        finalFitness.append(Fitness.evaluate_fitness(population[i], numExams, enrollment))
     print("The Final Fitnesses: ", finalFitness)
 
     finalFitness = np.array(finalFitness)
