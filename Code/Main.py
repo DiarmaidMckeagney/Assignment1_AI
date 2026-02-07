@@ -14,7 +14,7 @@ MUTATION_RATE = 0.15
 
 if __name__ == '__main__':
     print("hello world")
-    numExams, numSlots, numStudents, enrollment = Setup.read_instance("InputFiles/medium_instances.txt")
+    numExams, numSlots, numStudents, enrollment = Setup.read_instance("../InputFiles/small.txt")
 
     population = Setup.intialize_population(100, numExams, numSlots)
 
