@@ -7,9 +7,10 @@ def read_instance(fileName):
     enrollment = file.readlines()
     file.close()
 
-    numExams = int(enrollment[0][0])
-    numSlots = int(enrollment[0][2])
-    numStudents = int(enrollment[0][4])
+    nums = enrollment[0].strip().split()
+    numExams = int(nums[0])
+    numSlots = int(nums[1])
+    numStudents = int(nums[2])
     enrollment.pop(0)
 
     for i in range(len(enrollment)):
