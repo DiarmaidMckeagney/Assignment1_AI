@@ -9,7 +9,7 @@ def evaluate_fitness(solution, numExams, enrollment):
     #Invalid exam code
     #Duplicate exams
     #Student clash
-    #Slot imblance (prevents all exams being in one slot, this is a soft constraint and not implemented yet)
+    #Slot imblance (prevents all exams being in one slot, this is a soft constraint, helps prevent overloading a slot)
     
 
 
