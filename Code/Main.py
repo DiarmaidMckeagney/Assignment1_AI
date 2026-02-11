@@ -7,16 +7,14 @@ import Setup
 import Crossover, Fitness
 from Tournament import run_tournament
 
-GENERATIONS = 500
+GENERATIONS = 800
 POPULATION_SIZE = 100
-CROSSOVER_RATE = 0.8
-MUTATION_RATE = 0.05
+CROSSOVER_RATE = 0.6
+MUTATION_RATE = 0.2
 
 if __name__ == '__main__':
-    random.seed(2) # set seed for reproducibility
-
     #print("hello world")
-    numExams, numSlots, numStudents, enrollment = Setup.read_instance("InputFiles/small.txt")
+    numExams, numSlots, numStudents, enrollment = Setup.read_instance("InputFiles/medium_instance.txt")
 
     population = Setup.intialize_population(POPULATION_SIZE, numExams, numSlots)
 
@@ -60,10 +58,10 @@ if __name__ == '__main__':
 
         # Fill the rest of the next generation using tournament selection, crossover and mutation
         while len(nextGeneration) < POPULATION_SIZE:
-            parent1 = run_tournament(population, fitnesses, i)
+            parent1 = run_tournament(population, fitnesses)
 
             if random.random() < CROSSOVER_RATE:
-                parent2 = run_tournament(population, fitnesses, i)
+                parent2 = run_tournament(population, fitnesses)
                 child1, child2 = Crossover.crossover(parent1, parent2, numSlots)
 
                 # Mutation
