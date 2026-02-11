@@ -1,58 +1,68 @@
 
 
 
-def evaluate_fitness(solution, moduleCount, students):
+def evaluate_fitness(solution, numExams, enrollment):
     hardConstraintScore = 0 # tracks the hard constraints
-    softConstraintScore = 0 # tracks the soft constraints
 
-    # this tracks the number of times each module is timetabled
-    moduleCountTracker = [0] * (moduleCount + 1)
+    #Punishent Hierarchy:
+    #Missing exams
+    #Invalid exam code
+    #Duplicate exams
+    #Student clash
+    #Slot imblance (prevents all exams being in one slot, this is a soft constraint and not implemented yet)
+    
 
-    # going through each module in each slot and counting the occurrence
+
+    # Check for missing, duplicate or invalid exams
+    examCount = [0] * numExams
     for slot in solution:
-        localModuleCount = [0] * (moduleCount + 1)
-        for module in slot:
-            moduleCountTracker[module] += 1
-            localModuleCount[module] += 1
-        for k in localModuleCount:
-            if k > 1:
-                hardConstraintScore -= 200
+        for exam in slot:
+            if exam < 0 or exam >= numExams:
+                return -1e9 # invalid exam code, gets "death penalty"
+            if examCount[exam] > 0:
+                hardConstraintScore -= 1e5 # duplicate exam -100,000
+            examCount[exam] += 1
+
+    for count in examCount:
+        if count == 0:
+            hardConstraintScore -= 1e12 # missing exam, should be unrecoverable if missing exams
+
+    # Check for student clashes
+    for student in enrollment:
+        studentExamSlots = {}
+        for slotIdx, slotExams in enumerate(solution):
+            for exam in slotExams:
+                if student[exam] == 1:
+                    if slotIdx in studentExamSlots:
+                        hardConstraintScore -= 50000 # student clash -50,000
+                        #print(f"Student clash detected for student {student} in slot {slotIdx}")
+                    else:
+                        studentExamSlots[slotIdx] = True
+        
+        # Check for missing exams for this student
+        enrolledCount = sum(student)
+        scheduledCount = len(studentExamSlots)
+        if enrolledCount > scheduledCount:
+            hardConstraintScore -= 10000 # missing exam for student -10,000
+            #print(f"Missing exam detected for student {student}. Enrolled in {enrolledCount} exams but only {scheduledCount} scheduled.")
+
+    # Check for slot imbalance (soft constraint)
+    slotSizes = [len(slot) for slot in solution]
+    imbalance = max(slotSizes) - min(slotSizes)
+    hardConstraintScore -= imbalance * 1000  # Push toward even distribution
 
 
-    # goes through and punishes duplicate module timetabling
-    for i in moduleCountTracker:
-        if i == 1:
-            hardConstraintScore += 100 # correct
-        elif i == 0:
-            hardConstraintScore -= 300 # missing module
-        else:
-            hardConstraintScore -= 1000 # duplication
-
-    #going through each student and checking for clashing exams and punishing them
-    for student in students:
-        examsInThisTimetable = [0] * moduleCount
-        for slot in solution:
-            examsInThisSlot = 0
-            for module in slot:
-                examsInThisTimetable[module] += 1
-                if student[module] == 1:
-                    examsInThisSlot += 1
-
-            if examsInThisSlot <= 1:
-                hardConstraintScore += 100
-            else:
-                hardConstraintScore -= 600
-        if examsInThisTimetable.count(0) > 0:
-            hardConstraintScore -= 600
+    #print(f"numexams: {numExams}, solution size: {len(solution)}, enrollment size: {len(enrollment)}")
 
     return hardConstraintScore
 
 
 if __name__ == '__main__':
-    solution = [[6,2,5],[4,6,1]]
-    moduleCount = 6
-    students = [[0,1,1,0,0,1],[1,1,0,0,0,0],[0,1,0,1,0,0]]
+    solution = [[0, 2], [1], [3]]
+    moduleCount = 4
+    students = [[1,1,0,0],[0,1,1,0],[0,0,1,1],[0,1,0,1]]
 
     #used to test the fitness function.
+    print("Testing fitness function with solution: ", solution)
     print(evaluate_fitness(solution, moduleCount,students))
 

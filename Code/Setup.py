@@ -1,5 +1,16 @@
 import random
 
+def generate_random_solution(numExams, numSlots):
+    solution = []
+    for _ in range(numSlots):
+        slot = []
+        slotLength = numExams // numSlots
+        for _ in range(slotLength):
+            module = random.randint(0, numExams - 1)
+            slot.append(module)
+        solution.append(slot)
+    return solution
+
 def read_instance(fileName):
     print("Reading input file")
     
@@ -7,7 +18,7 @@ def read_instance(fileName):
     enrollment = file.readlines()
     file.close()
 
-    nums = enrollment[0].strip().split()
+    nums = enrollment[0].strip().split(" ")
     numExams = int(nums[0])
     numSlots = int(nums[1])
     numStudents = int(nums[2])
@@ -23,15 +34,6 @@ def intialize_population(popSize, numExams, numSlots):
     print("Setting up population")
     population = []
 
-    for i in range(popSize):
-        solution = []
-        for j in range(numSlots):
-            slot = []
-            slotLength = random.randint(0, numExams)
-            for k in range(slotLength):
-                module = random.randint(0, numExams - 1)
-                slot.append(module)
-            solution.append(slot)
-        population.append(solution)
-
+    for _ in range(popSize):
+        population.append(generate_random_solution(numExams, numSlots))
     return population
