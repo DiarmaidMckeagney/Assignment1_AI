@@ -51,6 +51,12 @@ def evaluate_fitness(solution, numExams, enrollment):
     imbalance = max(slotSizes) - min(slotSizes)
     hardConstraintScore -= imbalance * 1000  # Push toward even distribution
 
+    #Punish solutions that have slots with over the average exams per slot
+    averageExamsPerSlot = numExams / len(solution)
+    for slot in solution:
+        if len(slot) > averageExamsPerSlot:
+            hardConstraintScore -= (len(slot) - averageExamsPerSlot) * 1000
+
 
     #print(f"numexams: {numExams}, solution size: {len(solution)}, enrollment size: {len(enrollment)}")
 
