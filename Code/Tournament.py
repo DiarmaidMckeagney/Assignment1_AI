@@ -22,7 +22,7 @@ def run_tournament(population, fitnesses):
 def evaluate_round(participants):
     chanceFactor = random.random()
 
-    if chanceFactor < 0.75:
+    if chanceFactor < 0.6:
         return np.argmax(participants)
     else:
         return random.randint(0,TOURNAMENT_SIZE-1)

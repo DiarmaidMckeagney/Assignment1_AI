@@ -8,7 +8,7 @@ import Crossover, Fitness
 from Tournament import run_tournament
 
 GENERATIONS = 2000
-POPULATION_SIZE = 190
+POPULATION_SIZE = 170
 CROSSOVER_RATE = 0.5
 MUTATION_RATE = 0.40
 DIP_MUTATION_RATE = 0.90
@@ -35,6 +35,9 @@ if __name__ == '__main__':
             MUTATION_RATE = 0.2
             CROSSOVER_RATE = 0.5
             isStagnant = False
+            Mutator.SWAPPING_CHANCE = 0.8
+            Mutator.BALANCE_CHANCE = 0.3
+            Mutator.ORIGINAL_MUTATION_CHANCE = 0.6
         elif isStagnant: # the stagnation changes should stay for STAGNANT_ROUNDS_COUNTER_MAX rounds
             stagnantRounds += 1
 
@@ -43,6 +46,9 @@ if __name__ == '__main__':
         for pop in population:
             fitnesses.append(Fitness.evaluate_fitness(pop, numExams, enrollment))
 
+        if fitnesses.count(0) > 0:
+            print(f'finished on gen {i}')
+            break
         fitnesses = np.array(fitnesses)
         #print(fitnesses)
 
@@ -60,6 +66,9 @@ if __name__ == '__main__':
             isStagnant = True
             MUTATION_RATE = 0.9
             CROSSOVER_RATE = 0.2
+            Mutator.SWAPPING_CHANCE = 1
+            Mutator.BALANCE_CHANCE = 1
+            Mutator.ORIGINAL_MUTATION_CHANCE = 0
             stagnantRounds += 1
 
             print(f"Stagnation detected at generation {i}. Fitness: {max(fitnesses)}")
@@ -88,9 +97,11 @@ if __name__ == '__main__':
 
                 # Mutation
                 if random.random() < MUTATION_RATE:
-                    child1 = Mutator.mutate(child1,numSlots, numExams)
+                    child1Fitness = Fitness.evaluate_fitness(child1, numExams, enrollment)
+                    child1 = Mutator.mutate(child1,numSlots, numExams, child1Fitness)
                 if random.random() < MUTATION_RATE:
-                    child2 = Mutator.mutate(child2, numSlots, numExams)
+                    child2Fitness = Fitness.evaluate_fitness(child2, numExams, enrollment)
+                    child2 = Mutator.mutate(child2, numSlots, numExams, child2Fitness)
 
                 nextGeneration.append(child1)
                 if len(nextGeneration) < POPULATION_SIZE:
@@ -99,12 +110,14 @@ if __name__ == '__main__':
                 # Clone and mutate
                 child = copy.deepcopy(parent1)
                 if random.random() < MUTATION_RATE:
-                    child = Mutator.mutate(child, numSlots, numExams)
+                    childFitness = Fitness.evaluate_fitness(child, numExams, enrollment)
+                    child = Mutator.mutate(child, numSlots, numExams,childFitness)
                 nextGeneration.append(child)
 
         for i in range(len(dipPopulation)):
             if random.random() < DIP_MUTATION_RATE:
-                dipPopulation[i] = Mutator.mutate(dipPopulation[i], numSlots, numExams)
+                dipFitness = Fitness.evaluate_fitness(dipPopulation[i],numExams, enrollment)
+                dipPopulation[i] = Mutator.mutate(dipPopulation[i], numSlots, numExams,dipFitness)
 
         crossoverCounter = 0
         while crossoverCounter < POPULATION_SIZE:
