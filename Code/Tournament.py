@@ -2,7 +2,7 @@ import random
 
 import numpy as np
 
-TOURNAMENT_SIZE = 3
+TOURNAMENT_SIZE = 2
 def run_tournament(population, fitnesses):
     randomIndxs = []
 

@@ -4,19 +4,23 @@ import random
 import numpy as np
 import Mutator
 import Setup
-from Code import Crossover, Fitness
+import Crossover, Fitness
 from Tournament import run_tournament
 
-GENERATIONS = 1000
+GENERATIONS = 800
 POPULATION_SIZE = 100
-CROSSOVER_RATE = 0.8
-MUTATION_RATE = 0.15
+CROSSOVER_RATE = 0.6
+MUTATION_RATE = 0.2
 
 if __name__ == '__main__':
-    print("hello world")
-    numExams, numSlots, numStudents, enrollment = Setup.read_instance("../InputFiles/small.txt")
+    #print("hello world")
+    numExams, numSlots, numStudents, enrollment = Setup.read_instance("InputFiles/medium_instance.txt")
 
-    population = Setup.intialize_population(100, numExams, numSlots)
+    population = Setup.intialize_population(POPULATION_SIZE, numExams, numSlots)
+
+    bestFitness = -1e20
+    stagnantGenerations = 0
+
 
     maxFitness = []
     for i in range (0, GENERATIONS):
@@ -25,45 +29,59 @@ if __name__ == '__main__':
             fitnesses.append(Fitness.evaluate_fitness(pop, numExams, enrollment))
 
         fitnesses = np.array(fitnesses)
-        print(fitnesses)
+        #print(fitnesses)
 
-        five_percent = int(math.floor(len(fitnesses)/20))
-
-        ind = np.argpartition(fitnesses, -five_percent)[-five_percent:]
-
-        topFivePercent = fitnesses[ind]
-        print(f'top 5% of gen {i}: {topFivePercent}')
+        # Track global best fitness
+        if len(maxFitness) > 20:
+            if maxFitness[i-1] <= maxFitness[i-20]:
+                stagnantGenerations += 1
+            else:
+                stagnantGenerations = max(0, stagnantGenerations - 1)
 
         nextGeneration = []
 
+        # Elite selection - keep the top 5% of the population for the next generation
+        five_percent = int(math.floor(len(fitnesses)/20))
+        ind = np.argpartition(fitnesses, -five_percent)[-five_percent:]
+
+        topFivePercent = fitnesses[ind]
         for pop in ind:
             nextGeneration.append(copy.deepcopy(population[pop]))
 
-        print(f'The elite of gen {i}: {nextGeneration}')
+           # Check for stagnation
+        if stagnantGenerations >= 100:
+            print(f"Stagnation detected at generation {i}.")
+            # If stagnated, inject new random solutions for diversity
+            while len(nextGeneration) < POPULATION_SIZE * 0.35:
+                nextGeneration.append(Setup.generate_random_solution(numExams, numSlots))
+            stagnantGenerations = 0
+
+        # Fill the rest of the next generation using tournament selection, crossover and mutation
         while len(nextGeneration) < POPULATION_SIZE:
-            winnerOne = run_tournament(population, fitnesses)
+            parent1 = run_tournament(population, fitnesses)
 
-            chanceForCrossover = random.random()
+            if random.random() < CROSSOVER_RATE:
+                parent2 = run_tournament(population, fitnesses)
+                child1, child2 = Crossover.crossover(parent1, parent2, numSlots)
 
-            if chanceForCrossover < CROSSOVER_RATE and len(nextGeneration) < POPULATION_SIZE - 1:
-                winnerTwo = run_tournament(population, fitnesses)
-
-                childOne,childTwo = Crossover.crossover(winnerOne, winnerTwo, numSlots)
-
+                # Mutation
                 if random.random() < MUTATION_RATE:
-                    childOne = Mutator.mutate(childOne, numSlots, numExams)
-
+                    child1 = Mutator.mutate(child1,numSlots, numExams)
                 if random.random() < MUTATION_RATE:
-                    childTwo = Mutator.mutate(childTwo, numSlots, numExams)
+                    child2 = Mutator.mutate(child2, numSlots, numExams)
 
-                nextGeneration.append(childOne)
-                nextGeneration.append(childTwo)
-
+                nextGeneration.append(child1)
+                if len(nextGeneration) < POPULATION_SIZE:
+                    nextGeneration.append(child2)
             else:
+                # Clone and mutate
+                child = copy.deepcopy(parent1)
                 if random.random() < MUTATION_RATE:
-                    winnerOne = Mutator.mutate(winnerOne, numSlots, numExams)
+                    child = Mutator.mutate(child, numSlots, numExams)
+                nextGeneration.append(child)
 
-                nextGeneration.append(winnerOne)
+
+
         maxFit = np.max(fitnesses)
         maxFitness.append(int(maxFit))
         population.clear()
@@ -72,10 +90,10 @@ if __name__ == '__main__':
     finalFitness = []
     for i in range(len(population)):
         finalFitness.append(Fitness.evaluate_fitness(population[i], numExams, enrollment))
-    print("The Final Fitnesses: ", finalFitness)
+    #print("The Final Fitnesses: ", finalFitness)
 
     finalFitness = np.array(finalFitness)
-    print(finalFitness)
+    #print(finalFitness)
 
     five_percent = int(math.floor(len(finalFitness) / 20))
 
@@ -83,5 +101,5 @@ if __name__ == '__main__':
 
     topFivePercent = finalFitness[ind]
     print(f'top 5% of last gen: {topFivePercent}')
-    print("first timetable in last gen: ", population[0])
+    print("best timetable in last gen: ", population[finalFitness.argmax()], "with fitness: ", finalFitness.max())
     print("The max fitnesses of each gen: ",maxFitness)
