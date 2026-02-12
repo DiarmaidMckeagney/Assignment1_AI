@@ -42,11 +42,16 @@ if __name__ == '__main__':
             stagnantRounds += 1
 
         fitnesses = []
+        dipFitnesses = []
 
         for pop in population:
             fitnesses.append(Fitness.evaluate_fitness(pop, numExams, enrollment))
 
-        if fitnesses.count(0) > 0:
+        for dipPop in dipPopulation:
+            dipFitnesses.append(Fitness.evaluate_fitness(dipPop,numExams, enrollment))
+
+
+        if fitnesses.count(0) > 0 or dipFitnesses.count(0) > 0:
             print(f'finished on gen {i}')
             break
         fitnesses = np.array(fitnesses)
