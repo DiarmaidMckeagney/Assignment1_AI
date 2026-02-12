@@ -7,7 +7,7 @@ import Setup
 import Crossover, Fitness
 from Tournament import run_tournament
 
-GENERATIONS = 2000
+GENERATIONS = 2500
 POPULATION_SIZE = 170
 CROSSOVER_RATE = 0.5
 MUTATION_RATE = 0.40
@@ -32,7 +32,7 @@ if __name__ == '__main__':
     maxFitness = []
     for i in range (0, GENERATIONS):
         if stagnantRounds == STAGNANT_ROUNDS_COUNTER_MAX: # resets the mutation rate after a stagnation change
-            MUTATION_RATE = 0.2
+            MUTATION_RATE = 0.4
             CROSSOVER_RATE = 0.5
             isStagnant = False
             Mutator.SWAPPING_CHANCE = 0.8
