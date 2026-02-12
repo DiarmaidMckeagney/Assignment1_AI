@@ -1,13 +1,27 @@
 import copy
 import random
+from multiprocessing.process import ORIGINAL_DIR
+
 import numpy as np
 
-
-def mutate(solution,slotCount,examCount):
+SWAPPING_CHANCE = 0.8
+BALANCE_CHANCE = 0.3
+ORIGINAL_MUTATION_CHANCE = 0.6
+def mutate(solution,slotCount,examCount, fitness):
     newSolution = copy.deepcopy(solution)
 
-    # 50% chance of swapping exams between slots
-    if random.random() < 0.5:
+    if fitness >= -240000:
+        slot1 = random.randint(0, slotCount - 1)
+        slot2 = random.randint(0, slotCount - 1)
+        if newSolution[slot1] and newSolution[slot2]:
+            # Swap one exam between slots
+            exam1 = random.choice(newSolution[slot1])
+            newSolution[slot1].remove(exam1)
+            newSolution[slot2].append(exam1)
+        return newSolution
+
+    # 80% chance of swapping exams between slots
+    if random.random() < SWAPPING_CHANCE:
         slot1, slot2 = random.sample(range(slotCount), 2)
         if newSolution[slot1] and newSolution[slot2]:
             # Swap one exam between slots
@@ -21,7 +35,7 @@ def mutate(solution,slotCount,examCount):
     
     # 30% chance to move an exam from a larger slot to a smaller slot to reduce imbalance
     slot_sizes = [len(s) for s in newSolution]
-    if max(slot_sizes) > min(slot_sizes) + 1 and random.random() < 0.3:
+    if max(slot_sizes) > min(slot_sizes) + 1 and random.random() < BALANCE_CHANCE:
         large_slot = np.argmax(slot_sizes)
         small_slot = np.argmin(slot_sizes)
         exam = random.choice(newSolution[large_slot])
@@ -32,7 +46,7 @@ def mutate(solution,slotCount,examCount):
     slot = random.randint(0,slotCount-1)
     slotToChange = newSolution[slot]
 
-    if random.random() < 0.6:
+    if random.random() < ORIGINAL_MUTATION_CHANCE: # chance to pick a slot and change value/add/remove value
         exam = -1
         if len(slotToChange) > 1:
             exam = random.randint(0,len(slotToChange)-1)

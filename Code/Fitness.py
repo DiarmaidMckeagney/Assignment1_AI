@@ -45,15 +45,15 @@ def evaluate_fitness(solution, numExams, enrollment):
             #print(f"Missing exam detected for student {student}. Enrolled in {enrolledCount} exams but only {scheduledCount} scheduled.")
 
     # Check for slot imbalance (soft constraint)
-    slotSizes = [len(slot) for slot in solution]
-    imbalance = max(slotSizes) - min(slotSizes)
-    hardConstraintScore -= imbalance * 1000  # Push toward even distribution
+    # slotSizes = [len(slot) for slot in solution]
+    # imbalance = max(slotSizes) - min(slotSizes)
+    # hardConstraintScore -= imbalance * 1000  # Push toward even distribution
 
     #Punish solutions that have slots with over the average exams per slot
-    averageExamsPerSlot = numExams / len(solution)
-    for slot in solution:
-        if len(slot) > averageExamsPerSlot:
-            hardConstraintScore -= (len(slot) - averageExamsPerSlot) * 1000
+    # averageExamsPerSlot = numExams / len(solution)
+    # for slot in solution:
+    #     if len(slot) > averageExamsPerSlot:
+    #         hardConstraintScore -= (len(slot) - averageExamsPerSlot) * 1000
 
 
     #print(f"numexams: {numExams}, solution size: {len(solution)}, enrollment size: {len(enrollment)}")
