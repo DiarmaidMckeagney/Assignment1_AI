@@ -3,7 +3,7 @@ import random
 
 def crossover(parent1, parent2,slotCount):
     #get number of times to crossover
-    numIter = random.randint(1,2)
+    numIter = random.randint(1,3)
     child1, child2 = [],[]
 
     for i in range(numIter):

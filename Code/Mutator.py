@@ -10,7 +10,7 @@ ORIGINAL_MUTATION_CHANCE = 0.6
 def mutate(solution,slotCount,examCount, fitness):
     newSolution = copy.deepcopy(solution)
 
-    if fitness >= -240000: # this is a special case for when the pops have 4 or fewer clashes remaining
+    if fitness >= -243000: # this is a special case for when the pops have 4 or fewer clashes remaining
 
         slot1 = random.randint(0, slotCount - 1) # get two random slots
         slot2 = random.randint(0, slotCount - 1)

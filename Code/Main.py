@@ -6,7 +6,8 @@ import Mutator
 import Setup
 import Crossover, Fitness
 from Tournament import run_tournament
-import matplotlib as plt
+import matplotlib.pyplot as plt
+import time
 
 
 GENERATIONS = 2500
@@ -23,8 +24,9 @@ MAX_AMOUNT_OF_STAGNANT_GENS = 40 # The number of rounds the max fitness need to 
 
 
 if __name__ == '__main__':
+    startTime = time.time()
     #read in Input File
-    numExams, numSlots, numStudents, enrollment = Setup.read_instance("../InputFiles/small.txt")# NOTE: needs ../ for linux but nothing for windows
+    numExams, numSlots, numStudents, enrollment = Setup.read_instance("../InputFiles/medium_instance.txt")# NOTE: needs ../ for linux but nothing for windows
 
     #setup randomly generated population and diploid population
     population = Setup.initialize_population(POPULATION_SIZE, numExams, numSlots)
@@ -35,7 +37,8 @@ if __name__ == '__main__':
     isStagnant = False # used to reset the mutation and crossover rates when hypermutation ends
     hyperMutateRounds = 0 # counter to track how many rounds of hypermutation has occured
 
-    maxFitness = [] # tracks the max fitness of each generation
+    maxFitness = [] # tracks the max fitness of each generation of main pop
+    maxDipFitness = []
     for i in range (0, GENERATIONS):
         if hyperMutateRounds == STAGNANT_ROUNDS_COUNTER_MAX: # resets the mutation rate after a stagnation change
             MUTATION_RATE = 0.4
@@ -58,12 +61,12 @@ if __name__ == '__main__':
             dipFitnesses.append(Fitness.evaluate_fitness(dipPop,numExams, enrollment))
 
         # Ends search if optimal solution is found.
-        if fitnesses.count(0) > 0 or dipFitnesses.count(0) > 0:
+        if np.max(fitnesses) >= -3000 or np.max(dipFitnesses) >= -3000:
             print(f'finished on gen {i}')
             break
 
         fitnesses = np.array(fitnesses) # converted to a numpy array for easier processing
-
+        dipFitnesses = np.array(dipFitnesses)
 
         # Track global best fitness
         if len(maxFitness) > 20: # only starts after 20 generations.
@@ -158,6 +161,9 @@ if __name__ == '__main__':
         maxFit = np.max(fitnesses) # getting max fitness of population
         maxFitness.append(int(maxFit))
 
+        maxDipFit = np.max(dipFitnesses) # get max dip pop fitness
+        maxDipFitness.append(int(maxDipFit))
+
         population.clear() # clearing pop list to avoid issues
         population = nextGeneration # setting pop to the next generation
 
@@ -181,8 +187,12 @@ if __name__ == '__main__':
 
     topFivePercent = finalFitness[ind]
     topFivePercentDip = finalFitnessDip[indDip]
+    endTime = time.time()
+
+    computationTime = endTime - startTime # getting comp time
 
     #printing info
+    print("Computation time in seconds: ", computationTime)
     print(f'top 5% of last gen: {topFivePercent}')
     print(f'top 5% of last gens Diploid: {topFivePercentDip}')
     print(f'Max Fitness of final gen: {max(finalFitness)}')
@@ -192,3 +202,14 @@ if __name__ == '__main__':
     print("best timetable in last gen: ", population[finalFitness.argmax()], "with fitness: ", finalFitness.max())
     print("best timetable in last gens Diploid: ", dipPopulation[finalFitnessDip.argmax()], "with fitness: ", finalFitnessDip.max())
     print("The max fitnesses of each gen: ",maxFitness)
+
+    #plot results
+    plt.plot(maxFitness)
+    plt.show()
+    plt.plot(maxDipFitness)
+    plt.show()
+    plt.plot(maxFitness[100:])
+    plt.show()
+    plt.plot(maxDipFitness[100:])
+    plt.show()
+
