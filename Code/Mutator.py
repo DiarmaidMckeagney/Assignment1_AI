@@ -1,19 +1,21 @@
 import copy
 import random
-from multiprocessing.process import ORIGINAL_DIR
-
 import numpy as np
 
 SWAPPING_CHANCE = 0.8
 BALANCE_CHANCE = 0.3
 ORIGINAL_MUTATION_CHANCE = 0.6
+
+
 def mutate(solution,slotCount,examCount, fitness):
     newSolution = copy.deepcopy(solution)
 
-    if fitness >= -240000:
-        slot1 = random.randint(0, slotCount - 1)
+    if fitness >= -243000: # this is a special case for when the pops have 4 or fewer clashes remaining
+
+        slot1 = random.randint(0, slotCount - 1) # get two random slots
         slot2 = random.randint(0, slotCount - 1)
-        if newSolution[slot1] and newSolution[slot2]:
+
+        if newSolution[slot1] and newSolution[slot2]: # if they both exist
             # Swap one exam between slots
             exam1 = random.choice(newSolution[slot1])
             newSolution[slot1].remove(exam1)
@@ -27,10 +29,13 @@ def mutate(solution,slotCount,examCount, fitness):
             # Swap one exam between slots
             exam1 = random.choice(newSolution[slot1])
             exam2 = random.choice(newSolution[slot2])
+
             newSolution[slot1].remove(exam1)
             newSolution[slot2].remove(exam2)
+
             newSolution[slot1].append(exam2)
             newSolution[slot2].append(exam1)
+
             return newSolution
     
     # 30% chance to move an exam from a larger slot to a smaller slot to reduce imbalance

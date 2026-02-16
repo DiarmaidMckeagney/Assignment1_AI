@@ -1,6 +1,4 @@
 
-
-
 def evaluate_fitness(solution, numExams, enrollment):
     hardConstraintScore = 0 # tracks the hard constraints
 
